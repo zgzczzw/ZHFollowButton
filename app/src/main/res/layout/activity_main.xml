@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.zgzczw.zhfollowbutton.MainActivity">
+
+    <Button
+        android:id="@+id/test_bt"
+        android:layout_width="78dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_ripple_selector"
+        android:text="关注"
+        android:layout_margin="13dp" />
+
+    <com.zgzczw.zhfollowbutton.RippleButtonView
+        android:id="@+id/test_rbv"
+        android:layout_height="wrap_content"
+        android:layout_width="78dp"
+        android:background="#FFFFFF"
+        android:clickable="true"
+        android:layout_margin="13dp"
+        android:text="关注" />
+
+    <com.zgzczw.zhfollowbutton.RevealFollowButton
+        android:id="@+id/test_rfb"
+        android:layout_width="78dp"
+        android:layout_margin="13dp"
+        android:layout_height="wrap_content"
+        />
+</LinearLayout>
