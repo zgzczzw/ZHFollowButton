@@ -1,5 +1,8 @@
 package com.zgzczw.zhfollowbutton;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,11 +20,8 @@ public class RippleButtonView extends Button {
     float mCenterY;
     float mRevealRadius;
     boolean mIsPressed = false;
-    float mMaxRadius = 200;
-    public static int INVALIDATE_DURATION = 1;
     boolean mShouldDoAnimation = false;
-    float mRevealRadiusGap = 5f;
-    int mMinBetweenWidthAndHeight = 10;
+    Paint mPaint = new Paint();
 
     public RippleButtonView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,52 +35,73 @@ public class RippleButtonView extends Button {
                 mCenterX = event.getX();
                 mCenterY = event.getY();
                 mRevealRadius = 0f;
-                mIsPressed = !mIsPressed;
-                if (mIsPressed) {
-                    setTextColor(Color.WHITE);
-                } else {
-                    setTextColor(Color.BLACK);
-                }
+
                 mShouldDoAnimation = true;
-                invalidate();
+                setFollowed(!mIsPressed, mShouldDoAnimation);
         }
         return super.onTouchEvent(event);
+    }
+
+    protected void setFollowed(boolean isFollowed, boolean needAnimate) {
+        mIsPressed = isFollowed;
+        if (needAnimate) {
+            ValueAnimator animator = ObjectAnimator.ofFloat(this, "empty", 0.0F, (float) Math.hypot(getMeasuredWidth(), getMeasuredHeight()));
+            animator.setDuration(500L);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mRevealRadius = (Float) animation.getAnimatedValue();
+                    invalidate();
+                }
+
+            });
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    if (mIsPressed) {
+                        setTextColor(Color.WHITE);
+                        setBackgroundColor(Color.RED);
+                        setText("未关注");
+                    } else {
+                        setTextColor(Color.BLACK);
+                        setBackgroundColor(Color.WHITE);
+                        setText("关注");
+                    }
+                    mShouldDoAnimation = false;
+                    mRevealRadius = 0;
+                    invalidate();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+
+                }
+            });
+            animator.start();
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mShouldDoAnimation) {
-            mMaxRadius = getMeasuredWidth() + 50;
-            if (mRevealRadius > mMinBetweenWidthAndHeight / 2)
-                mRevealRadius += mRevealRadiusGap * 4;
-            else
-                mRevealRadius += mRevealRadiusGap;//半径变大
+        if (!mIsPressed) {
+            mPaint.setColor(Color.WHITE);
+        } else {
+            mPaint.setColor(Color.RED);
+        }//设置画笔颜色
+        mPaint.setStyle(Paint.Style.FILL);
+        canvas.drawCircle(mCenterX, mCenterY, mRevealRadius, mPaint);
 
-            Paint mPaint = new Paint();
-            if (!mIsPressed) {
-                mPaint.setColor(Color.WHITE);
-            } else {
-                mPaint.setColor(Color.RED);
-            }//设置画笔颜色
-            mPaint.setStyle(Paint.Style.FILL);
-            canvas.drawCircle(mCenterX, mCenterY, mRevealRadius, mPaint);
-
-            if (mRevealRadius <= mMaxRadius) {
-                //一定时间后再刷新
-                postInvalidateDelayed(INVALIDATE_DURATION);
-            } else {
-                if (mIsPressed) {
-                    setTextColor(Color.WHITE);
-                    this.setBackgroundColor(Color.RED);
-                } else {
-                    setTextColor(Color.BLACK);
-                    this.setBackgroundColor(Color.WHITE);
-                }
-                mShouldDoAnimation = false;
-                invalidate();
-            }
-        }
     }
 
 }
