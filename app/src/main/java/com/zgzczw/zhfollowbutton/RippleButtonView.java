@@ -27,19 +27,35 @@ public class RippleButtonView extends Button {
         super(context, attrs);
     }
 
+    private boolean isValidClick(float x, float y) {
+        if (x >= 0 && x <= getWidth() && y >= 0 && y <= getHeight()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                if (!isValidClick(event.getX(), event.getY())) {
+                    return false;
+                }
+                return true;
+            case MotionEvent.ACTION_UP:
+                if (!isValidClick(event.getX(), event.getY())) {
+                    return false;
+                }
                 mCenterX = event.getX();
                 mCenterY = event.getY();
                 mRevealRadius = 0f;
 
                 mShouldDoAnimation = true;
                 setFollowed(!mIsPressed, mShouldDoAnimation);
+                return true;
         }
-        return super.onTouchEvent(event);
+        return false;
     }
 
     protected void setFollowed(boolean isFollowed, boolean needAnimate) {

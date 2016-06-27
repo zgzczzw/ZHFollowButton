@@ -36,18 +36,42 @@ public class RevealFollowButton extends FrameLayout {
         init();
     }
 
+    private boolean isValidClick(float x, float y) {
+        if (x >= 0 && x <= getWidth() && y >= 0 && y <= getHeight()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_UP:
+                return true;
+        }
+        return false;
+    }
+
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (!isValidClick(event.getX(), event.getY())) {
+                    return false;
+                }
+                return true;
             case MotionEvent.ACTION_UP:
+                if (!isValidClick(event.getX(), event.getY())) {
+                    return false;
+                }
                 mCenterX = event.getX();
                 mCenterY = event.getY();
                 mRevealRadius = 0;
                 mFollowTv.setVisibility(View.VISIBLE);
                 mUnFollowTv.setVisibility(View.VISIBLE);
                 setFollowed(!mIsFollowed, true);
-                break;
+                return true;
         }
-        return true;
+        return false;
     }
 
     private void init() {
@@ -117,9 +141,4 @@ public class RevealFollowButton extends FrameLayout {
         canvas.restoreToCount(i);
         return bool2;
     }
-
-    public boolean onInterceptTouchEvent(MotionEvent paramMotionEvent) {
-        return true;
-    }
-
 }
