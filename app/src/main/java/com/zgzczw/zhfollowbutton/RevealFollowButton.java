@@ -14,11 +14,13 @@ import android.widget.TextView;
 
 public class RevealFollowButton extends FrameLayout {
     protected boolean mIsFollowed;
+    protected boolean mIsFirstInit = true;
     private TextView mFollowTv;
     private TextView mUnFollowTv;
     float mCenterX;
     float mCenterY;
     float mRevealRadius = 0;
+
     private Path mPath = new Path();
 
     public RevealFollowButton(Context paramContext) {
@@ -63,6 +65,7 @@ public class RevealFollowButton extends FrameLayout {
                 if (!isValidClick(event.getX(), event.getY())) {
                     return false;
                 }
+                mIsFirstInit =false;
                 mCenterX = event.getX();
                 mCenterY = event.getY();
                 mRevealRadius = 0;
@@ -121,6 +124,9 @@ public class RevealFollowButton extends FrameLayout {
     }
 
     private boolean drawBackground(View paramView) {
+        if(mIsFirstInit) {
+            return true;
+        }
         if (mIsFollowed && paramView == mUnFollowTv) {
             return true;
         } else if (!mIsFollowed && paramView == mFollowTv) {
